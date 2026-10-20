@@ -1,0 +1,1397 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>RATTIB Challenge — Arrange to Understand</title><meta name="description" content="Practise all 56 RATTIB cards with Arrange, Guess the Card and Connect activities.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout concept: a tabletop of flat geometric cards. Home is the route A to H with one pip per card;
+   every game screen is a single card plus its answers, so attention stays on the concept. */
+:root{
+  --bg:#f6f4ec; --surface:#FFFFFF; --surface-2:#eeece3; --ink:#151515; --muted:#555555; --line:#ccc9be;
+  --accent:#075ccc; --on-accent:#FFFFFF;
+  --good:#17794D; --good-bg:#DCF3E7; --bad:#B3302A; --bad-bg:#FBE0DD; --part:#8F5309; --part-bg:#FCEBD3;
+  --sA:#FFFFFF; --sB:#ef2429; --sC:#123578; --sD:#ffd629; --sE:#222222; --sF:#94d8f5; --sG:#ff8817; --sH:#08613f;
+  --f-display:Arial,Helvetica,sans-serif;
+  --f-body:Arial,Helvetica,sans-serif;
+  --f-mono:ui-monospace,Menlo,Consolas,monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body);
+  padding-block:18px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:920px;margin:0 auto}
+h1,h2,h3,p,ul,ol,blockquote{margin:0}
+ul,ol{padding:0;list-style:none}
+button{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.shape{flex:none;display:block}
+.fc>.shape,.tile-top>.shape,.bin-top>.shape,.code>.shape{stroke:#777;stroke-width:.8;filter:drop-shadow(0 0 1px #888)}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand-mark{font:800 1.25rem var(--f-display);letter-spacing:.14em}
+.brand-sub{font-family:var(--f-mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.ext{font-size:.9rem;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line)}
+.ext:hover{color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;padding:18px 0 28px}
+.eyebrow{font-family:var(--f-mono);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+h1{font:800 clamp(2rem,6.2vw,3.5rem)/1.03 var(--f-display);letter-spacing:-.02em;text-wrap:balance;margin:10px 0 14px}
+.lede{max-width:56ch;color:var(--muted);font-size:1.05rem}
+.fan{position:relative;width:230px;height:190px;flex:none}
+.fc{position:absolute;width:106px;height:142px;background:var(--surface);border:1px solid var(--line);
+  border-top:6px solid var(--s);border-radius:8px;padding:10px;display:flex;flex-direction:column;justify-content:space-between;color:var(--s)}
+.fc span{font-family:var(--f-mono);font-weight:600;font-size:.85rem;color:var(--ink)}
+.fc.c1{left:0;top:22px;transform:rotate(-8deg)}
+.fc.c2{left:58px;top:2px;transform:rotate(3deg)}
+.fc.c3{left:118px;top:26px;transform:rotate(11deg)}
+@media (max-width:640px){.hero{grid-template-columns:1fr}.fan{display:none}}
+
+/* buttons */
+.btn{font-weight:700;background:var(--accent);color:var(--on-accent);border:0;border-radius:6px;padding:11px 20px;cursor:pointer;min-height:44px}
+.btn:hover:not([disabled]){filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.ghost:hover:not([disabled]){box-shadow:inset 0 0 0 1.5px var(--ink);filter:none}
+.btn[disabled]{opacity:.45;cursor:default}
+.link{background:none;border:0;padding:8px 0;color:var(--muted);cursor:pointer;font-weight:600}
+.link:hover{color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+
+/* home: modes */
+.sec-title{font:800 1.2rem var(--f-display);letter-spacing:-.01em}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:12px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.mode-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mode-ico{color:var(--accent)}
+.mode h3{font:800 1.5rem var(--f-display);letter-spacing:-.01em}
+.mode .best{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.mode p{color:var(--muted)}
+.mode .meta{font-size:.85rem}
+.mode .btn{margin-top:auto;align-self:flex-start}
+
+/* home: route */
+.route{margin-top:36px}
+.route-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.route-head p{color:var(--muted);font-size:.92rem}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.tile{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--s);
+  border-radius:8px;padding:12px 14px;text-decoration:none;min-width:0}
+.tile:hover{border-color:var(--ink)}
+.tile-top{display:flex;align-items:center;gap:8px;color:var(--s)}
+.tile-top b{font:800 1.15rem var(--f-display);color:var(--ink)}
+.tile-name{font-weight:600;line-height:1.25;min-height:2.5em}
+.pips{display:flex;gap:4px}
+.pips i{flex:1;height:8px;border-radius:2px;border:1.5px solid var(--line)}
+.pips i.on{background:var(--s);border-color:#777}
+.tile-count{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.foot{margin-top:28px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:.85rem}
+.foot .link{font-size:.85rem;padding:6px 0}
+
+/* game frame */
+.gbar{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;margin-bottom:8px}
+.gmeta{display:flex;gap:10px;align-items:baseline;justify-content:center}
+.gmeta b{font:800 1rem var(--f-display)}
+.gmeta span,.gstats span{font-family:var(--f-mono);font-size:.82rem;color:var(--muted)}
+.gstats{display:flex;gap:14px}
+.gstats b{color:var(--ink)}
+@media (max-width:520px){.gbar{grid-template-columns:auto 1fr}.gstats{grid-column:1/-1;justify-content:space-between}.gmeta{justify-content:flex-end}}
+.seg{display:flex;gap:4px}
+.seg i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.seg i.cur{background:var(--accent)}
+.seg i.ok{background:var(--good)}
+.seg i.no{background:var(--bad)}
+.seg i.part{background:var(--part)}
+.stage{display:flex;flex-direction:column;gap:16px;margin-top:22px}
+.prompt{font:700 1.15rem/1.3 var(--f-display)}
+
+/* card */
+.card{background:var(--surface);border:1px solid var(--line);border-top:6px solid var(--s,var(--line));border-radius:8px;
+  padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:28px}
+.card-title{font:800 clamp(1.5rem,5vw,2.1rem)/1.1 var(--f-display);letter-spacing:-.01em;text-wrap:balance}
+.card-title.q{color:var(--muted)}
+.kws{display:flex;flex-wrap:wrap;gap:8px}
+.kws li{border:1.5px solid var(--ink);border-radius:999px;padding:3px 12px;font-weight:600;font-size:.95rem}
+.kws li.off{border-style:dashed;border-color:var(--line);color:var(--muted);font-weight:500}
+.desc.off{color:var(--muted);border:1.5px dashed var(--line);border-radius:6px;padding:8px 12px;font-size:.92rem}
+.worth{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.code{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-weight:600;font-size:.8rem;padding:3px 8px;
+  border:1px solid var(--line);border-radius:4px;background:var(--surface-2);color:var(--ink);flex:none}
+.code .shape{color:var(--s)}
+.code.ghost{color:var(--muted);font-weight:500}
+
+/* answers */
+.bins{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.bin{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--surface);
+  border:1.5px solid var(--line);border-left:6px solid var(--s);border-radius:8px;padding:10px 12px;min-height:72px;cursor:pointer}
+.bin-top{display:flex;align-items:center;gap:8px;color:var(--s)}
+.bin-top b{font:800 1.1rem var(--f-display);color:var(--ink)}
+.bin-name{font-size:.88rem;line-height:1.25;color:var(--muted)}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:8px;padding:12px 14px;cursor:pointer;min-height:52px;width:100%}
+.opt .k{font-family:var(--f-mono);font-size:.8rem;border:1px solid var(--line);border-radius:4px;padding:1px 7px;color:var(--muted);flex:none}
+.opt-t{flex:1;min-width:0}
+.bin:hover:not([disabled]),.opt:hover:not([disabled]){border-color:var(--ink)}
+.bin[disabled],.opt[disabled]{cursor:default}
+.bin[disabled]:not(.correct):not(.wrong),.opt[disabled]:not(.correct):not(.wrong){opacity:.55}
+.bin.correct,.opt.correct{background:var(--good-bg);border-color:var(--good)}
+.bin.wrong,.opt.wrong{background:var(--bad-bg);border-color:var(--bad)}
+@media (prefers-reduced-motion:no-preference){.btn,.opt,.bin,.tile,.slot{transition:border-color .12s,background-color .12s,filter .12s}}
+
+/* feedback */
+.fb{border:1.5px solid var(--line);border-left-width:6px;border-radius:8px;padding:14px 16px;background:var(--surface);display:flex;flex-direction:column;gap:10px}
+.fb.good{border-color:var(--good);background:var(--good-bg)}
+.fb.bad{border-color:var(--bad);background:var(--bad-bg)}
+.fb.part{border-color:var(--part);background:var(--part-bg)}
+.fb-head{display:flex;justify-content:space-between;gap:10px;font:800 1.1rem var(--f-display)}
+.fb.good .fb-head{color:var(--good)}
+.fb.bad .fb-head{color:var(--bad)}
+.fb.part .fb-head{color:var(--part)}
+.pts{font-family:var(--f-mono);font-size:.95rem}
+.pts small{font-size:.75rem;opacity:.85}
+.fb-sec{font-size:.92rem;color:var(--muted)}
+.fb-sub{font-family:var(--f-mono);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.note{display:flex;gap:10px;align-items:flex-start;padding-top:10px;border-top:1px solid var(--line)}
+.note > div{min-width:0}
+.note p{font-size:.95rem}
+.fb .btn{align-self:flex-start}
+
+/* connect */
+.scenario{padding:14px 16px;border-left:6px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:1.1rem}
+.pair{display:flex;flex-wrap:wrap;gap:12px}
+.pair-card{flex:1 1 200px;background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--s);border-radius:8px;
+  padding:10px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-start;min-width:0}
+.pair-card b{font:800 1.15rem var(--f-display)}
+
+/* sequence */
+.slots{display:grid;gap:8px}
+.slot{display:flex;align-items:center;gap:10px;min-height:50px;border:1.5px dashed var(--line);border-radius:8px;padding:6px 12px;background:var(--surface);text-align:left;width:100%}
+.slot .n{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);width:1.6em;flex:none}
+.slot .st{font-weight:700}
+.slot .sk{color:var(--muted);font-size:.8rem;margin-left:auto;text-align:right}
+button.slot{cursor:pointer}
+.slot.filled{border-style:solid;border-color:var(--ink)}
+.slot.ok{border-style:solid;border-color:var(--good);background:var(--good-bg)}
+.slot.no{border-style:solid;border-color:var(--bad);background:var(--bad-bg)}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--surface);border:1.5px solid var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;text-align:left;
+  display:flex;flex-direction:column;gap:2px;min-height:44px}
+.chip:hover{background:var(--surface-2)}
+.chip small{color:var(--muted);font-size:.78rem}
+
+/* results */
+.res{display:flex;flex-direction:column;gap:22px;margin-top:22px}
+.res-score{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-end}
+.big{font:800 clamp(3.2rem,12vw,5rem)/1 var(--f-display);letter-spacing:-.03em}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat span{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.stat b{font:800 1.5rem var(--f-display)}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;
+  background:var(--accent);color:var(--on-accent);padding:3px 10px;border-radius:4px;align-self:flex-start}
+.review{display:grid;gap:10px;margin-top:10px}
+.rv{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--s);border-radius:8px;padding:12px 14px}
+.rv .note{border-top:0;padding-top:0}
+.links{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.92rem}
+.links a{color:var(--accent)}
+.practice-note{margin-top:14px;color:var(--muted);font-size:.92rem;max-width:76ch}
+.reflection{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.reflection label{font-weight:700}
+.reflection textarea{width:100%;min-height:100px;resize:vertical;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:10px;font:inherit}
+.reflection small{color:var(--muted)}
+/* Shared visual language with the RATTIB companion. */
+.brand-mark{text-decoration:none;letter-spacing:-1px;font-size:26px;font-weight:950}.brand-mark span:nth-child(3n+1){color:#075ccc}.brand-mark span:nth-child(3n+2){color:#ef2429}.brand-mark span:nth-child(3n){color:#078554}.top{border-bottom:2px solid var(--ink);margin-bottom:22px}.btn{background:var(--ink);border:2px solid var(--ink);border-radius:0}.btn:hover:not([disabled]){background:var(--accent);filter:none}.btn.ghost{border:1px solid var(--line)}.btn.ghost:hover:not([disabled]){background:var(--surface-2)}.mode,.tile,.card,.pair-card{border-left-color:var(--ink);border-right-color:var(--ink);border-bottom-color:var(--ink);border-radius:0}.mode{border-top:6px solid #ffd629}.mode:nth-child(2){border-top-color:#075ccc}.mode:nth-child(3){border-top-color:#ff8817}@media(max-width:420px){.top{flex-wrap:wrap}.brand{gap:8px}}
+</style>
+
+</head><body><div class="wrap" id="app"></div>
+<noscript><p style="padding:16px">RATTIB Challenge needs JavaScript to run.</p></noscript>
+
+<script>
+(function(){
+'use strict';
+
+var WEB='.';
+
+/* ---------- Data ---------- */
+var SECTIONS=[
+ {id:'A',name:'Game Design Foundations',connect:'A designer shapes a system, a player acts within it, and the system’s responses build the experience.'},
+ {id:'B',name:'Genre & Style',connect:'Gameplay sets expectations, while visual style, audio style and tone communicate a game’s identity.'},
+ {id:'C',name:'Goals & Themes',connect:'A goal gives direction, a success condition makes completion clear, and theme and purpose give those actions meaning.'},
+ {id:'D',name:'Rules & Systems',connect:'Rules set boundaries and permitted actions and resolve changes in state; clarity, fairness and consistency support the intended experience.'},
+ {id:'E',name:'Challenge & Interaction',connect:'Challenges relate to player skill, controls and decisions shape interaction, and support helps players learn through play.'},
+ {id:'F',name:'Feedback & Narrative',connect:'Feedback communicates change, a story is delivered through narrative, and reactions and consequences make actions feel significant.'},
+ {id:'G',name:'Design Principles & Ideation',connect:'Clear aims and meaningful choices support agency, rules shape balance, and theme and mechanics become testable ideas.'},
+ {id:'H',name:'Design Process & Development',connect:'A scoped idea becomes a prototype, an integrated build, an evaluated release and an evidence-led revision.'}
+];
+
+var CARDS=[{"c": "A1", "t": "Game Design", "k": ["Experience", "Decision", "Structure"], "e": "Game design structures player experiences by shaping decisions, interactions, and the systems that support meaningful play."}, {"c": "A2", "t": "Game Designer", "k": ["Design", "Decision", "Experience"], "e": "A game designer deliberately connects rules, mechanics, goals, and experience so that player actions have purpose."}, {"c": "A3", "t": "Player", "k": ["Action", "Choice", "Experience"], "e": "The player is the active participant whose actions and choices create the experience of play."}, {"c": "A4", "t": "Player Experience", "k": ["Feel", "Decide", "Remember"], "e": "Player experience is what players feel, decide, learn, and remember while interacting with the game."}, {"c": "A5", "t": "Meaningful Play", "k": ["Action", "Outcome", "Consequence"], "e": "Meaningful play occurs when player actions produce clear outcomes and consequences that can be understood."}, {"c": "A6", "t": "Game Mechanics", "k": ["Action", "System", "Response"], "e": "Game mechanics define the actions and system responses that make interaction and gameplay possible."}, {"c": "A7", "t": "Beyond Visuals and Code", "k": ["Experience", "Systems", "Purpose"], "e": "Game design goes beyond visuals and programming; its purpose is to shape coherent systems and meaningful experiences."}, {"c": "B1", "t": "Game Genre", "k": ["Gameplay", "Category", "Expectation"], "e": "Game genre classifies a game by its gameplay patterns and helps players anticipate the kind of experience they will encounter."}, {"c": "B2", "t": "Player Expectation", "k": ["Actions", "Goals", "Challenges"], "e": "Player expectations are shaped by the actions, goals, and challenges normally associated with a particular genre."}, {"c": "B3", "t": "Game Style", "k": ["Identity", "Expression", "Experience"], "e": "Game style gives a game its distinctive identity through the way its experience is expressed and presented."}, {"c": "B4", "t": "Visual Style", "k": ["Look", "Art", "Presentation"], "e": "Visual style determines how the game looks through its art direction, visual language, and overall presentation."}, {"c": "B5", "t": "Audio Style", "k": ["Sound", "Mood", "Atmosphere"], "e": "Audio style uses sound and music to establish mood, atmosphere, and the emotional character of the experience."}, {"c": "B6", "t": "Tone", "k": ["Feeling", "Mood", "Character"], "e": "Tone describes the overall feeling or emotional character communicated throughout the game."}, {"c": "B7", "t": "Genre + Style", "k": ["Gameplay", "Identity", "Experience"], "e": "When genre and style support one another, gameplay and presentation combine into a coherent and recognizable experience."}, {"c": "C1", "t": "Game Goal", "k": ["Direction", "Purpose", "Achievement"], "e": "A game goal gives players direction, purpose, and a clear sense of what they are working to achieve."}, {"c": "C2", "t": "Player Motivation", "k": ["Desire", "Focus", "Progress"], "e": "Player motivation creates the desire to act, maintain focus, and continue progressing toward a goal."}, {"c": "C3", "t": "Success Condition", "k": ["Target", "Measure", "Accomplishment"], "e": "A success condition defines the target that allows players to recognize and measure accomplishment."}, {"c": "C4", "t": "Game Theme", "k": ["Meaning", "Context", "Setting"], "e": "A game theme gives gameplay meaning by providing a context, setting, and interpretive frame for player actions."}, {"c": "C5", "t": "Emotional Tone", "k": ["Feeling", "Resonance", "Experience"], "e": "Emotional tone shapes how an experience feels and how strongly its themes resonate with the player."}, {"c": "C6", "t": "Design Purpose", "k": ["Fun", "Meaning", "Impact"], "e": "Design purpose clarifies the intended value of the experience, such as fun, meaning, learning, or impact."}, {"c": "C7", "t": "Goal + Theme", "k": ["Direction", "Meaning", "Cohesion"], "e": "When goals and themes reinforce each other, the game gains stronger direction, meaning, and overall cohesion."}, {"c": "D1", "t": "Game Rule", "k": ["Boundaries", "Instructions", "Structure"], "e": "Game rules establish the boundaries, instructions, and structure that define how play operates."}, {"c": "D2", "t": "Player Actions", "k": ["Allowed", "Required", "Forbidden"], "e": "Rules specify which player actions are allowed, required, or forbidden within the game system."}, {"c": "D3", "t": "Rule Types", "k": ["Setup", "Gameplay", "Resolution"], "e": "Rules can govern setup, ongoing gameplay, and resolution, giving structure to the beginning, middle, and end of play."}, {"c": "D4", "t": "Rule Clarity", "k": ["Understand", "Interpret", "Follow"], "e": "Clear rules are easy to understand, interpret consistently, and follow during play."}, {"c": "D5", "t": "Fairness", "k": ["Equality", "Trust", "Balance"], "e": "Fairness builds player trust by ensuring that rules and outcomes are balanced and applied appropriately."}, {"c": "D6", "t": "Consistency", "k": ["Reliable", "Predictable", "Coherent"], "e": "Consistency makes the rules reliable, predictable, and coherent across similar situations."}, {"c": "D7", "t": "Suitable Rules", "k": ["Concept", "Audience", "Experience"], "e": "Suitable rules fit the game concept, target audience, and intended player experience."}, {"c": "E1", "t": "Challenge", "k": ["Obstacle", "Goal", "Effort"], "e": "A challenge presents an obstacle or goal that requires effort, thought, strategy, or skill from the player."}, {"c": "E2", "t": "Player Skill", "k": ["Ability", "Learning", "Mastery"], "e": "Player skill develops through ability, learning, practice, and eventual mastery of the game's demands."}, {"c": "E3", "t": "Difficulty", "k": ["Easy", "Hard", "Balanced"], "e": "Difficulty describes how demanding a challenge feels and should be balanced against the player's current skill."}, {"c": "E4", "t": "Flow", "k": ["Focus", "Skill", "Challenge"], "e": "Flow occurs when challenge and skill are well matched, helping the player remain focused and engaged."}, {"c": "E5", "t": "Interaction", "k": ["Controls", "Decisions", "Engagement"], "e": "Interaction is how players use controls, make decisions, and engage with the game system."}, {"c": "E6", "t": "Interaction Patterns", "k": ["System", "Player", "Cooperation"], "e": "Interaction patterns describe how players relate to systems and to other players through competition, cooperation, or other forms of play."}, {"c": "E7", "t": "Player Experience", "k": ["Learning", "Struggle", "Mastery"], "e": "Player experience emerges from the cycle of learning, struggling, adapting, and eventually achieving mastery."}, {"c": "F1", "t": "Feedback", "k": ["Response", "Change", "Understanding"], "e": "Feedback communicates the result of a player's action and helps the player understand what has changed in the game."}, {"c": "F2", "t": "Feedback Types", "k": ["Visual", "Audio", "Systemic"], "e": "Feedback may be delivered visually, through audio, or through systemic changes that communicate the result of player actions."}, {"c": "F3", "t": "Consequence", "k": ["Decision", "Change", "Meaning"], "e": "A consequence is a meaningful change produced by a player's decision, affecting the game, story, or world."}, {"c": "F4", "t": "Narrative Feedback", "k": ["Character", "World", "Reaction"], "e": "Narrative feedback occurs when characters, the world, or the story visibly react to what the player has done."}, {"c": "F5", "t": "Narrative", "k": ["Delivery", "Dialogue", "Choice"], "e": "Narrative is the way a story is delivered through dialogue, environment, events, and player choices."}, {"c": "F6", "t": "Story", "k": ["Events", "Characters", "World"], "e": "Story provides the events, characters, and world that give context to what happens during play."}, {"c": "F7", "t": "Meaningful Experience", "k": ["Context", "Emotion", "Purpose"], "e": "A meaningful experience gives gameplay context, emotion, and purpose so that player actions feel significant."}, {"c": "G1", "t": "Clear Goals", "k": ["Direction", "Purpose", "Action"], "e": "Clear goals give players direction, purpose, and an understandable reason to take action."}, {"c": "G2", "t": "Meaningful Choices", "k": ["Decision", "Outcome", "Ownership"], "e": "Meaningful choices allow decisions to produce distinct outcomes, giving players a sense of ownership over what happens."}, {"c": "G3", "t": "Player Agency", "k": ["Control", "Influence", "Participation"], "e": "Player agency is the player's sense of control and influence over the game through meaningful participation."}, {"c": "G4", "t": "Balanced Design", "k": ["Challenge", "Rules", "Fairness"], "e": "Balanced design aligns challenge, rules, and fairness so that the experience remains understandable, credible, and engaging."}, {"c": "G5", "t": "Responsive Play", "k": ["Feedback", "Interaction", "Adaptation"], "e": "Responsive play uses feedback and interaction to help players understand results, adapt strategies, and continue engaging."}, {"c": "G6", "t": "Theme-Mechanic Alignment", "k": ["Theme", "Mechanic", "Cohesion"], "e": "Theme-mechanic alignment occurs when what players do mechanically reinforces the game's theme and creates cohesion."}, {"c": "G7", "t": "Replayability", "k": ["Variety", "Strategy", "Return"], "e": "Replayability gives players reasons to return through variety, alternative strategies, and different possible experiences."}, {"c": "H1", "t": "Planning", "k": ["Idea", "Audience", "Scope"], "e": "Planning defines the initial idea, target audience, and project scope so the development process begins with clear direction."}, {"c": "H2", "t": "Pre-production", "k": ["Prototype", "Document", "Plan"], "e": "Pre-production turns the idea into a workable plan through prototyping, documentation, and preparation before full development."}, {"c": "H3", "t": "Production", "k": ["Build", "Assets", "Systems"], "e": "Production is the stage where assets, systems, and playable content are built and integrated into the game."}, {"c": "H4", "t": "Testing / QA", "k": ["Alpha", "Beta", "Usability"], "e": "Testing and QA use alpha, beta, and usability testing to identify issues, gather feedback, and improve the player experience."}, {"c": "H5", "t": "Pre-launch", "k": ["Promotion", "Release Prep", "Distribution"], "e": "Pre-launch prepares the game for release through promotion, release preparation, and distribution planning."}, {"c": "H6", "t": "Launch", "k": ["Release", "Monitor", "Respond"], "e": "Launch releases the game to its intended audience while the team monitors performance and responds to emerging issues."}, {"c": "H7", "t": "Post-launch", "k": ["Support", "Update", "Improve"], "e": "Post-launch continues support through updates, improvements, maintenance, and responses to player feedback."}];
+
+var LINKS=[
+ {
+  "cards": [
+   "A5",
+   "F1"
+  ],
+  "ok": "Feedback shows what an action changed, so the outcome is clear enough to make play meaningful.",
+  "bad": [
+   "Visible rewards make an action meaningful as long as players notice the reward.",
+   "A clear immediate response is sufficient even when it has no readable connection to later play."
+  ],
+  "whyBad": [
+   "A noticeable reward does not by itself explain which action caused it or why it matters.",
+   "Immediate clarity matters, but players also need to understand how outcomes relate to the wider game."
+  ],
+  "why": "Ask what the player did, what changed, and how that result affects the next decision. A visible effect alone may leave the connection unclear."
+ },
+ {
+  "cards": [
+   "D2",
+   "E1"
+  ],
+  "ok": "Rules set which actions are allowed, required or forbidden, which defines the obstacles a player has to work through.",
+  "bad": [
+   "The number of available actions determines challenge: more actions make the obstacle harder.",
+   "An obstacle defines the challenge independently; action rules mainly explain how to take a turn."
+  ],
+  "whyBad": [
+   "More actions may offer useful options or add complexity; their number alone does not determine challenge.",
+   "Allowed actions change how an obstacle can be approached, so they help define the challenge itself."
+  ],
+  "why": "A locked route is a different challenge if players may trade keys, break the lock or ask another player for help. Rules shape those possibilities."
+ },
+ {
+  "cards": [
+   "E2",
+   "E3",
+   "E4"
+  ],
+  "ok": "Flow appears when difficulty is balanced against the player’s current skill, keeping them focused and engaged.",
+  "bad": [
+   "Matching challenge to the average player skill keeps everyone in flow throughout a session.",
+   "Reducing difficulty whenever a player struggles is the main way to maintain flow."
+  ],
+  "whyBad": [
+   "An average can hide different abilities. The relationship changes as each player learns.",
+   "Struggle can support learning. Appropriate challenge depends on skill and context, rather than automatic reduction."
+  ],
+  "why": "For the same puzzle, a beginner and a practiced player may need different support. Reassess the match as skill develops."
+ },
+ {
+  "cards": [
+   "C1",
+   "C3"
+  ],
+  "ok": "The goal gives direction, and the success condition sets the target players use to recognise accomplishment.",
+  "bad": [
+   "The goal describes the intended achievement, while the success condition measures effort toward it.",
+   "The goal communicates what matters, while reaching a high score defines success."
+  ],
+  "whyBad": [
+   "Effort can indicate progress without establishing that the intended target was reached.",
+   "A high score defines success only when the design explicitly makes it the completion condition."
+  ],
+  "why": "For a rescue goal, “all three villagers reach safety” makes completion observable. A progress indicator alone does not define completion."
+ },
+ {
+  "cards": [
+   "C4",
+   "G6"
+  ],
+  "ok": "Theme gives actions meaning, and when what players do mechanically reinforces it, the game gains cohesion.",
+  "bad": [
+   "Alignment means presenting the theme clearly in art and dialogue around any suitable mechanics.",
+   "Alignment means every mechanic must literally reproduce an action from the setting."
+  ],
+  "whyBad": [
+   "Presentation can communicate theme, but this relationship asks whether player actions reinforce its meaning.",
+   "Mechanics can reinforce a theme through abstraction; literal simulation is not required."
+  ],
+  "why": "If the theme is shared survival, pooling scarce supplies can reinforce it through decisions. A survival-themed illustration alone does not establish alignment."
+ },
+ {
+  "cards": [
+   "B1",
+   "B2"
+  ],
+  "ok": "Genre signals typical actions, goals and challenges, so players arrive with expectations about the experience.",
+  "bad": [
+   "Genre supplies a checklist of familiar features that a design should preserve to meet expectations.",
+   "A familiar visual presentation is the strongest basis for predicting the actions of a genre."
+  ],
+  "whyBad": [
+   "Genre informs expectations without requiring a fixed checklist; designs can combine or challenge conventions.",
+   "Visual presentation can suggest possibilities, but genre here concerns patterns of gameplay."
+  ],
+  "why": "Calling a game a platformer suggests movement and traversal challenges. These are expectations to consider, rather than a mandatory feature list."
+ },
+ {
+  "cards": [
+   "B5",
+   "B6"
+  ],
+  "ok": "Sound and music establish mood and atmosphere, which feeds the emotional character the whole game communicates.",
+  "bad": [
+   "Audio establishes tone mainly by matching the emotion of the soundtrack to each scene.",
+   "Consistent background music establishes a consistent tone even when other elements communicate differently."
+  ],
+  "whyBad": [
+   "Music is one contributor. Effects, silence, context and other design elements also shape the overall tone.",
+   "A consistent soundtrack cannot guarantee a coherent tone if other elements create a conflicting experience."
+  ],
+  "why": "A sparse soundtrack and abrupt sounds can contribute to unease. Interpret their effect alongside the scene, actions and other cues."
+ },
+ {
+  "cards": [
+   "D4",
+   "D5",
+   "D6"
+  ],
+  "ok": "Rules that are clear, consistent and fairly applied let players understand, predict and trust outcomes.",
+  "bad": [
+   "Fair rules produce equal outcomes, while clarity and consistency explain how those outcomes happen.",
+   "Consistent application makes a rule fair once all players understand it."
+  ],
+  "whyBad": [
+   "Fairness concerns appropriate opportunities and treatment; different decisions can reasonably produce different outcomes.",
+   "A clear, consistently applied rule can still advantage one side inappropriately. Examine its effects as well."
+  ],
+  "why": "A rule may be clearly stated and consistently applied yet favour one player. Examine clarity, reliability and fairness separately, then their combined effects."
+ },
+ {
+  "cards": [
+   "F3",
+   "G2"
+  ],
+  "ok": "Choices feel meaningful when decisions lead to distinct consequences that change the game, story or world.",
+  "bad": [
+   "Choices become meaningful when each option gives a different immediate reward.",
+   "Choices feel meaningful when players have enough information to predict the exact outcome."
+  ],
+  "whyBad": [
+   "Different rewards can matter, but significance depends on the context and later possibilities, not difference alone.",
+   "Players need a basis for deciding; exact certainty is not necessary, and uncertainty can be part of the choice."
+  ],
+  "why": "Compare what changes after each decision: resources, future options or relationships. Significance depends on the situation, not the number of buttons."
+ },
+ {
+  "cards": [
+   "F1",
+   "F4"
+  ],
+  "ok": "Narrative feedback is feedback delivered through the story: characters or the world visibly react to what the player did.",
+  "bad": [
+   "Narrative feedback is dialogue that explains a result after an action, while world reactions are systemic feedback.",
+   "Narrative feedback is a story consequence that must permanently change later events."
+  ],
+  "whyBad": [
+   "A world reaction can communicate narrative meaning and a system change together; the categories can overlap.",
+   "A contextual acknowledgement may provide narrative feedback without permanently branching the story."
+  ],
+  "why": "A guard remembering a theft communicates a story response. A changed access rule can add a systemic consequence to that same event."
+ },
+ {
+  "cards": [
+   "A3",
+   "G3"
+  ],
+  "ok": "The player’s actions and choices create the experience, and agency is their sense of control and influence through that participation.",
+  "bad": [
+   "Agency increases with the number of actions available to the player.",
+   "Agency follows when controls respond quickly enough for players to perform their chosen actions."
+  ],
+  "whyBad": [
+   "More options do not ensure meaningful influence; examine what those actions change.",
+   "Responsive controls support participation, but agency also concerns influence over what happens."
+  ],
+  "why": "Ask what the player can influence and how they recognise that influence. Many responsive buttons with identical outcomes offer weak evidence of agency."
+ },
+ {
+  "cards": [
+   "H2",
+   "H3"
+  ],
+  "ok": "Pre-production turns the idea into a plan and prototype, and production then builds and integrates assets and systems from it.",
+  "bad": [
+   "Pre-production establishes a complete plan that production implements without revisiting earlier decisions.",
+   "A prototype becomes production once its visuals look close to the finished game."
+  ],
+  "whyBad": [
+   "The plan supports production but can be revised as building and testing provide new evidence.",
+   "Visual polish alone does not establish production readiness; feasibility, scope and systems also matter."
+  ],
+  "why": "A prototype can expose a costly assumption before full production. Later testing may still send the team back to revise the plan."
+ },
+ {
+  "cards": [
+   "H4",
+   "H7"
+  ],
+  "ok": "Testing gathers feedback before release, and post-launch support keeps improving the game through updates and player feedback.",
+  "bad": [
+   "Testing validates the release build; post-launch updates mainly add content after validation is complete.",
+   "Post-launch feedback replaces earlier testing because it comes from real players."
+  ],
+  "whyBad": [
+   "Testing can inform revision throughout development and support; new content is only one possible post-launch task.",
+   "Post-launch evidence complements earlier testing; waiting until release leaves avoidable issues undiscovered."
+  ],
+  "why": "A usability test can reveal confusing menus before release; player reports can expose further issues after release. Both can guide revisions."
+ },
+ {
+  "cards": [
+   "H5",
+   "H6"
+  ],
+  "ok": "Pre-launch prepares promotion, release and distribution, and launch releases the game while the team monitors and responds.",
+  "bad": [
+   "Pre-launch prepares the public-facing materials; technical monitoring begins once the launch period ends.",
+   "Launch starts when promotional material is published and distribution arrangements are announced."
+  ],
+  "whyBad": [
+   "Monitoring is important during release itself, and preparations may cover operational readiness too.",
+   "Promotion and announcements may happen before release. Launch concerns making the game available to its audience."
+  ],
+  "why": "A store page and distribution plan prepare release. Once the game becomes available, monitoring and responses support the launch itself."
+ },
+ {
+  "cards": [
+   "A6",
+   "G5"
+  ],
+  "ok": "Mechanics define actions and system responses, and responsive play uses feedback and interaction so players can read results and adapt.",
+  "bad": [
+   "Responsive play is achieved when a mechanic executes input without a noticeable delay.",
+   "Mechanics establish the possible actions, while responsive play concerns only their visual presentation."
+  ],
+  "whyBad": [
+   "Low delay helps, but players also need interpretable results that support adaptation.",
+   "Responsive play involves the interaction and readable results, which may use visual, audio or systemic information."
+  ],
+  "why": "A crafting mechanic changes resources; readable feedback tells the player what happened and what they can attempt next."
+ },
+ {
+  "cards": [
+   "E5",
+   "E6"
+  ],
+  "ok": "Interaction is how players use controls and make decisions, while patterns describe how they relate to systems and each other, through competition or cooperation.",
+  "bad": [
+   "Interaction patterns classify player relationships, while interaction concerns only controller inputs.",
+   "Cooperation is an interaction pattern only when all participants have identical available actions."
+  ],
+  "whyBad": [
+   "Interaction includes decisions and engagement with systems, beyond the controller layout.",
+   "Players can cooperate through complementary roles and different actions."
+  ],
+  "why": "A shared task may involve complementary roles: one player gathers while another builds. The pattern describes their relationship through those interactions."
+ },
+ {
+  "cards": [
+   "G4",
+   "E1"
+  ],
+  "ok": "Balanced design aligns challenge, rules and fairness so the experience stays understandable, credible and engaging.",
+  "bad": [
+   "Balanced design gives every player the same challenge and the same resources.",
+   "Balance is achieved when the success rate reaches the designer’s target."
+  ],
+  "whyBad": [
+   "Asymmetric roles can still be fair; examine opportunities and effects in context.",
+   "A target success rate is one observation, not sufficient evidence that rules, challenge and fairness align."
+  ],
+  "why": "Inspect whether available actions, challenge and opportunities fit the audience and intended experience. Equal resources are only one possible arrangement."
+ },
+ {
+  "cards": [
+   "G7",
+   "G2"
+  ],
+  "ok": "Variety and alternative strategies give players reasons to return, and meaningful choices let each playthrough feel different.",
+  "bad": [
+   "Replayability follows when every choice unlocks content the player has not previously seen.",
+   "Replayability follows when the first playthrough offers a large number of choices."
+  ],
+  "whyBad": [
+   "New content can help, but familiar situations may invite return through different strategies and consequences.",
+   "The number of choices alone does not establish meaningful variation or reasons to return."
+  ],
+  "why": "A familiar board position can still invite a different strategy. Meaningful alternatives may give a reason to return without adding new content each time."
+ },
+ {
+  "cards": [
+   "C1",
+   "C2"
+  ],
+  "ok": "A goal gives direction, and motivation supplies the desire to keep acting and progressing toward it.",
+  "bad": [
+   "A clearly displayed goal provides the motivation to keep progressing toward it.",
+   "Motivation is the reward that players receive when they reach the goal."
+  ],
+  "whyBad": [
+   "Knowing the direction does not ensure the player wants to pursue it; desire and perceived value also matter.",
+   "Rewards can contribute to motivation, which may also involve curiosity, mastery, expression or other aims."
+  ],
+  "why": "A visible destination supplies direction. Curiosity about what lies there, or a wish to master the route, can supply reasons to continue."
+ },
+ {
+  "cards": [
+   "F5",
+   "F6"
+  ],
+  "ok": "Story supplies the events, characters and world, and narrative is how that story is delivered through dialogue, environment, events and choices.",
+  "bad": [
+   "Story describes the written plot, while narrative describes the dialogue that presents it.",
+   "Narrative determines the sequence of events, while story determines the visual setting."
+  ],
+  "whyBad": [
+   "This is too narrow: story includes events, characters and world, while delivery may use space, actions and choices.",
+   "The distinction here is material versus delivery; both concepts extend beyond ordering or visual setting alone."
+  ],
+  "why": "The same rescue story can be delivered through dialogue, environmental traces or player choices. Compare the material with how players encounter it."
+ },
+ {
+  "cards": [
+   "D7",
+   "C6"
+  ],
+  "ok": "Suitable rules fit the concept, audience and intended experience, which the design purpose helps to clarify.",
+  "bad": [
+   "Suitable rules preserve the design purpose even when testing shows the audience cannot use them.",
+   "A clear design purpose identifies one suitable rule set before testing starts."
+  ],
+  "whyBad": [
+   "Purpose should guide evaluation, including whether the rules work for the intended audience and experience.",
+   "Several rule sets may serve the same purpose. Prototype and test their effects rather than assuming one answer."
+  ],
+  "why": "For a short beginner session, a rule may need fewer dependencies while still supporting the intended decisions. Test that fit with the audience."
+ },
+ {
+  "cards": [
+   "A1",
+   "A2"
+  ],
+  "ok": "Game design shapes decisions and systems; a game designer makes and tests those design decisions.",
+  "bad": [
+   "A game designer completes the design once the rules have been written clearly.",
+   "Game design describes the intended experience; the designer evaluates success by checking that intended features are present."
+  ],
+  "whyBad": [
+   "Rules are one part of design. Their effects still need to be explored through use and revision.",
+   "Implemented features do not establish what players experienced. Gather evidence of their decisions and interpretations."
+  ],
+  "why": "For a resource-sharing game, compare a designer’s intended cooperation with what players actually do under the proposed rules."
+ },
+ {
+  "cards": [
+   "A4",
+   "E7"
+  ],
+  "ok": "Both concern player experience: A4 foregrounds what players feel, decide and remember; E7 examines learning, struggle and mastery.",
+  "bad": [
+   "A4 concerns emotional experience, whereas E7 concerns performance independently of feelings and decisions.",
+   "E7 describes a fixed progression that every player completes before an experience becomes meaningful."
+  ],
+  "whyBad": [
+   "These are overlapping perspectives. Learning and struggle can involve feelings, decisions and memories.",
+   "Players may pause, regress, leave or interpret the same challenge differently. This is a learning lens, not a universal fixed path."
+  ],
+  "why": "Compare two players attempting the same puzzle. Record their decisions and accounts alongside how their strategies change."
+ },
+ {
+  "cards": [
+   "A7",
+   "F7"
+  ],
+  "ok": "Systems and purpose help shape an experience; context, emotion and purpose help explain why players may find it significant.",
+  "bad": [
+   "A meaningful experience follows when the designer states a valuable purpose and builds systems around it.",
+   "Visuals and programming become irrelevant once the intended purpose of an experience is clear."
+  ],
+  "whyBad": [
+   "A valuable intention does not establish player meaning; ask players how they interpreted the experience.",
+   "Presentation and implementation can support the experience. The card asks us to consider the wider design, not discard those contributions."
+  ],
+  "why": "A simple delivery mechanic may acquire meaning through a relationship and its context. Ask the player what mattered rather than assuming the intended emotion occurred."
+ },
+ {
+  "cards": [
+   "B3",
+   "B4",
+   "B7"
+  ],
+  "ok": "Visual style contributes to game style; genre and style can reinforce the gameplay and identity players encounter.",
+  "bad": [
+   "A coherent visual style is enough to establish the game’s overall style and genre.",
+   "Genre and style align when visual presentation reproduces the usual look of that gameplay category."
+  ],
+  "whyBad": [
+   "Overall style also involves sound, tone and expression; gameplay patterns inform genre.",
+   "Alignment can use an unusual look. Examine how presentation and gameplay work together, rather than similarity to conventions alone."
+  ],
+  "why": "Compare a playful and a solemn presentation of the same puzzle mechanic. What changes in identity, expectations and the experience?"
+ },
+ {
+  "cards": [
+   "C5",
+   "F7"
+  ],
+  "ok": "Emotional tone shapes how an experience feels; context and purpose can make those feelings significant to the player.",
+  "bad": [
+   "An intense emotional tone establishes a meaningful experience when the player reports a strong feeling.",
+   "A shared context and purpose mean players should experience the same emotional tone."
+  ],
+  "whyBad": [
+   "Intensity alone does not establish significance; a quiet moment may matter more in the player’s own account.",
+   "Players bring different interpretations. Ask for their experience rather than prescribing a universal response."
+  ],
+  "why": "For the same farewell scene, one player may describe sadness and another relief. Ask what the moment meant in context."
+ },
+ {
+  "cards": [
+   "C7",
+   "G1"
+  ],
+  "ok": "Clear goals support understandable action; aligning those goals with theme can give the direction contextual meaning.",
+  "bad": [
+   "A clearly stated goal and a recognisable theme establish cohesion even when the required actions conflict with the theme.",
+   "Theme-aligned goals should leave success criteria implicit so that players discover meaning for themselves."
+  ],
+  "whyBad": [
+   "Clarity and recognition do not resolve a conflict between actions and theme. Inspect what players are asked to do.",
+   "Interpretive openness can coexist with understandable direction. Hidden success criteria may create confusion rather than meaning."
+  ],
+  "why": "If a community theme asks players to hoard every resource, examine the intended tension. Decide whether the goal supports the meaning you intend."
+ },
+ {
+  "cards": [
+   "D1",
+   "D3"
+  ],
+  "ok": "Rules structure play; setup, gameplay and resolution describe different roles rules can perform within that structure.",
+  "bad": [
+   "Setup, gameplay and resolution are separate rule sets that can be designed without affecting each other.",
+   "Each rule belongs to one phase, so a gameplay rule should not affect setup or resolution."
+  ],
+  "whyBad": [
+   "Starting resources can affect later choices and the resolution. Examine dependencies across rule roles.",
+   "One rule may connect phases. These categories help analyse function, not prevent relationships."
+  ],
+  "why": "A starting-resource rule affects what is affordable in turn one and may affect a final score. Trace that dependency across the rule types."
+ },
+ {
+  "cards": [
+   "F1",
+   "F2"
+  ],
+  "ok": "Feedback communicates a result; visual and audio describe presentation channels while systemic feedback concerns changes in game state or possibilities.",
+  "bad": [
+   "Visual, audio and systemic feedback are three mutually exclusive channels for communicating a result.",
+   "A systemic change provides sufficient feedback even when players cannot perceive or interpret it."
+  ],
+  "whyBad": [
+   "A systemic change can be communicated visually and audibly at the same time. The categories overlap.",
+   "A state change must be perceivable and interpretable if it is to help the player understand what happened."
+  ],
+  "why": "Opening a gate changes available routes. A visible open gate, text and a sound can communicate that same systemic event."
+ }
+];
+
+var CASES=[
+ {
+  "s": "Players finish the game but cannot tell when they have won. It just ends.",
+  "a": "C3",
+  "d": [
+   "C1",
+   "F1",
+   "D4"
+  ],
+  "why": "The immediate problem is the missing completion criterion: specify what counts as winning.",
+  "whyWrong": [
+   "The goal supplies direction, but this case asks how players recognise completion.",
+   "Feedback should communicate completion once its condition is defined.",
+   "Rule clarity may help explain the condition, but first establish the target itself."
+  ]
+ },
+ {
+  "s": "Two players read the same rule and understand it in different ways, so arguments start at the table.",
+  "a": "D4",
+  "d": [
+   "D6",
+   "D5",
+   "D1"
+  ],
+  "why": "The same wording leads to different interpretations. Clarify the instruction and check how players read it.",
+  "whyWrong": [
+   "Consistency concerns reliable application across comparable situations. Here the instruction is interpreted differently.",
+   "Arguments may affect trust, but unequal treatment is not established by this scenario.",
+   "The broad rule concept is relevant; clarity identifies the specific issue to address first."
+  ]
+ },
+ {
+  "s": "In a fantasy adventure, everything the player does is spreadsheet management, so the world feels disconnected from the actions.",
+  "a": "G6",
+  "d": [
+   "C4",
+   "B4",
+   "G4"
+  ],
+  "why": "The mismatch is between what players do and the meaning promised by the theme.",
+  "whyWrong": [
+   "The theme supplies context; the first question here is how actions reinforce it.",
+   "Changing the art may communicate fantasy more strongly without resolving the action–theme mismatch.",
+   "Balance concerns challenge, rules and fairness, rather than this thematic mismatch."
+  ]
+ },
+ {
+  "s": "The team has a rough idea. Before building anything, they define the audience and decide what is in and out of scope.",
+  "a": "H1",
+  "d": [
+   "H2",
+   "C6",
+   "D7"
+  ],
+  "why": "Defining the initial idea, intended audience and boundaries is the planning focus.",
+  "whyWrong": [
+   "Prototyping and production preparation are the next emphasis; this case concerns initial scope.",
+   "Purpose can guide the plan but does not describe the full activity stated here.",
+   "Rule suitability is evaluated within the concept and audience being established."
+  ]
+ },
+ {
+  "s": "Beta testers report confusing menus, and the team gathers their reports to fix problems before release.",
+  "a": "H4",
+  "d": [
+   "H2",
+   "H7",
+   "F1"
+  ],
+  "why": "The team is evaluating player reports and identifying issues before release: Testing / QA.",
+  "whyWrong": [
+   "A prototype may also be tested in pre-production, but evaluation and issue finding are the explicit focus.",
+   "The scenario states that the game has not yet been released.",
+   "Reports provide feedback, but H4 describes the development activity the team is carrying out."
+  ]
+ },
+ {
+  "s": "Weeks after release, the team keeps shipping fixes and new content based on player reports.",
+  "a": "H7",
+  "d": [
+   "H4",
+   "H6",
+   "G5"
+  ],
+  "why": "Support and revisions weeks after release fit the post-launch stage.",
+  "whyWrong": [
+   "Testing may occur within this work; post-launch describes its timing and wider support role.",
+   "Launch focuses on the release and immediate monitoring, rather than ongoing support weeks later.",
+   "Responsive play concerns the player’s interaction during play; this case describes development support."
+  ]
+ },
+ {
+  "s": "Whichever option the player picks, the same thing happens, so choosing feels pointless.",
+  "a": "G2",
+  "d": [
+   "G3",
+   "F3",
+   "G7"
+  ],
+  "why": "The issue is that the offered decisions lead to indistinguishable outcomes.",
+  "whyWrong": [
+   "Agency is related, but examining the consequences of these alternatives is the most direct first step.",
+   "Consequences matter, but G2 directly examines whether the offered choices produce distinct meaningful outcomes.",
+   "Variation may support return visits, but the immediate issue concerns the current choices."
+  ]
+ },
+ {
+  "s": "Guards remark on the player’s earlier theft, and villagers treat them differently from then on.",
+  "a": "F4",
+  "d": [
+   "F3",
+   "F5",
+   "F1"
+  ],
+  "why": "The world and characters acknowledge an earlier action: this is narrative feedback.",
+  "whyWrong": [
+   "The reaction may also have consequences; the explicit evidence is how the world communicates its response.",
+   "Narrative concerns delivery broadly; this case isolates a response to the player.",
+   "Feedback is the broader category; narrative feedback specifies the story-based reaction."
+  ]
+ },
+ {
+  "s": "A rule says players may play a card, must draw at the end of their turn, and must never look at another player’s hand.",
+  "a": "D2",
+  "d": [
+   "D1",
+   "D3",
+   "E5"
+  ],
+  "why": "The statement distinguishes allowed, required and forbidden player actions.",
+  "whyWrong": [
+   "Game rules is the broader category; D2 identifies exactly what this statement regulates.",
+   "Rule types distinguish setup, gameplay and resolution rather than permissions and obligations.",
+   "Interaction concerns engagement and decisions, while this statement specifies action permissions."
+  ]
+ },
+ {
+  "s": "The store page has to say which category of gameplay this is: a platformer, a puzzle game or a strategy game.",
+  "a": "B1",
+  "d": [
+   "B2",
+   "B3",
+   "B7"
+  ],
+  "why": "The question explicitly asks for a category of gameplay: Game Genre.",
+  "whyWrong": [
+   "Expectations may follow from the label, but they are not the category being requested.",
+   "Style concerns how the experience expresses its identity.",
+   "Genre and style together describe a wider relationship; the immediate task is genre classification."
+  ]
+ },
+ {
+  "s": "Players keep coming back because each run allows different strategies and produces varied outcomes.",
+  "a": "G7",
+  "d": [
+   "G2",
+   "G3",
+   "H7"
+  ],
+  "why": "The evidence is a reason to return: varied strategies and outcomes across runs.",
+  "whyWrong": [
+   "Meaningful choices contribute, but the stated outcome is repeated play.",
+   "Agency concerns felt influence during play, not by itself the reason to return.",
+   "Post-launch describes development support, not the player’s repeated play."
+  ]
+ },
+ {
+  "s": "The team is writing a design document and building a playable prototype before committing to full production.",
+  "a": "H2",
+  "d": [
+   "H1",
+   "H3",
+   "H4"
+  ],
+  "why": "The design document and prototype prepare the project before full production.",
+  "whyWrong": [
+   "Initial planning establishes idea, audience and scope; this case moves into prototyping and preparation.",
+   "The scenario explicitly places this work before full production.",
+   "Testing may inform the prototype, but no evaluation activity is described here."
+  ]
+ },
+ {
+  "s": "A player feels in control and can see that their participation really changes the game.",
+  "a": "G3",
+  "d": [
+   "G2",
+   "E5",
+   "G5"
+  ],
+  "why": "The central evidence is a sense of control and influence through participation.",
+  "whyWrong": [
+   "Meaningful choices can support agency; the scenario emphasises the player’s perceived influence.",
+   "Interaction is broader and does not by itself establish felt control over outcomes.",
+   "Responsive play supports interpretation and adaptation; the specific focus here is influence."
+  ]
+ },
+ {
+  "s": "The studio is preparing trailers, store pages and distribution plans, and the game has not been released yet.",
+  "a": "H5",
+  "d": [
+   "H1",
+   "H6",
+   "H7"
+  ],
+  "why": "Promotion, store materials and distribution preparations before release fit pre-launch.",
+  "whyWrong": [
+   "Planning is broader; this case specifies preparations for an approaching release.",
+   "Launch concerns making the game available and monitoring the release.",
+   "Post-launch support occurs after release."
+  ]
+ },
+ {
+  "s": "The soundtrack and sound effects make a quiet horror game feel unsettling, even before anything appears on screen.",
+  "a": "B5",
+  "d": [
+   "B6",
+   "C5",
+   "B4"
+  ],
+  "why": "The prompt isolates sound and music as the design elements to examine first.",
+  "whyWrong": [
+   "Tone describes the overall emotional character; audio style identifies the source specified in the prompt.",
+   "Emotional tone concerns how the experience feels; the stated evidence points to audio choices.",
+   "The scenario highlights an effect occurring before a visual event appears."
+  ]
+ },
+ {
+  "s": "A designer decides the game should teach fractions, and that aim guides what the whole experience needs to deliver.",
+  "a": "C6",
+  "d": [
+   "C1",
+   "C3",
+   "C4"
+  ],
+  "why": "Teaching fractions describes the intended value or impact of the design.",
+  "whyWrong": [
+   "A player-facing goal would specify what players aim to achieve within the activity.",
+   "A success condition would specify an observable completion target.",
+   "Theme supplies context and meaning; the statement here specifies an educational purpose."
+  ]
+ }
+];
+
+var MODES={
+ arrange:{name:'Arrange',blurb:'Place each card in its section, then put the development stages in order.',meta:'9 cards and 1 sequence'},
+ guess:{name:'Guess the Card',blurb:'Clues appear one at a time. Name the card before the last clue to earn more.',meta:'10 cards'},
+ connect:{name:'Connect',blurb:'Compare related concepts, apply them to a situation, and explain your reasoning.',meta:'4 relationships and 4 situations · optional reflection'}
+};
+var GUESS_PTS=[0,10,7,4,2];
+
+/* ---------- Helpers ---------- */
+var app=document.getElementById('app');
+function esc(s){return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+function rx(s){return s.replace(/[.*+?^${}()|[\]\\\/]/g,'\\$&');}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+var byCode={};CARDS.forEach(function(c){byCode[c.c]=c;});
+function sec(id){return SECTIONS.filter(function(s){return s.id===id;})[0];}
+function sv(id){return 'var(--s'+id+')';}
+
+var SHAPES={
+ A:'<circle cx="12" cy="12" r="10"/>',
+ B:'<rect x="3" y="3" width="18" height="18"/>',
+ C:'<path d="M12 2.5 22 21H2z"/>',
+ D:'<path d="M2 17a10 10 0 0 1 20 0z"/>',
+ E:'<path d="M12 1.5 22.5 12 12 22.5 1.5 12z"/>',
+ F:'<path d="M3 21V3a18 18 0 0 1 18 18z"/>',
+ G:'<rect x="1.5" y="7" width="21" height="10" rx="5"/>',
+ H:'<path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z"/>'
+};
+function shape(id,size){size=size||18;return '<svg class="shape" width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'+SHAPES[id]+'</svg>';}
+function codeChip(c){return '<span class="code" style="--s:'+sv(c[0])+'">'+shape(c[0],14)+'<span>'+c+'</span></span>';}
+function cardNote(c){return '<div class="note">'+codeChip(c.c)+'<div><b>'+esc(c.t)+'</b><p>'+esc(c.e)+'</p></div></div>';}
+
+function mask(card){
+  var t=card.e;
+  var re=new RegExp(rx(card.t).replace(/\s+/g,'\\s+')+'(?:e?s)?','ig');
+  var out=t.replace(re,'_____');
+  if(out===t){
+    card.t.split(/[\s\/+\-]+/).filter(function(w){return w.length>=4;}).forEach(function(w){
+      out=out.replace(new RegExp('\\b'+rx(w)+'\\w*','ig'),'_____');
+    });
+  }
+  return out;
+}
+
+/* ---------- Storage ---------- */
+var KEY='rattib-challenge-v2';
+function emptyStore(){return {best:{},progress:{},notes:{},schema:3};}
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){var r=JSON.parse(raw);if(r&&(r.schema===2||r.schema===3)&&r.progress&&typeof r.progress==='object'&&!Array.isArray(r.progress)){
+      r.best=r.best||{};r.notes=r.notes||{};
+      if(r.schema===2){
+        var p2=r.progress.F2,p7=r.progress.F7;
+        delete r.progress.F2;delete r.progress.F7;
+        if(p2){r.progress.F7=p2;}if(p7){r.progress.F2=p7;}
+        var notes={};Object.keys(r.notes).forEach(function(k){
+          notes[k.replace(/F[27]\b/g,function(code){return code==='F2'?'F7':'F2';})]=r.notes[k];
+        });r.notes=notes;r.schema=3;
+      }
+      return r;
+    }}
+    var legacy=JSON.parse(localStorage.getItem('rattib-challenge-v1'));
+    var migrated=emptyStore();
+    if(legacy&&legacy.best){migrated.best=legacy.best;}
+    if(legacy&&legacy.mastered){CARDS.forEach(function(c){
+      if(legacy.mastered[c.c==='F2'?'F7':c.c==='F7'?'F2':c.c]){migrated.progress[c.c]={attempts:0,everCorrect:true,legacy:true,evidence:[]};}
+    });}
+    // Preserve historical high scores; scores are practice records, not mastery evidence.
+    return migrated;
+  }catch(e){return emptyStore();}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+var store=load();
+function progressFor(code){
+  var p=store.progress[code];
+  return p&&typeof p==='object'?p:{attempts:0,everCorrect:false,evidence:[]};
+}
+function correctCount(){return CARDS.filter(function(c){return progressFor(c.c).everCorrect;}).length;}
+function attemptedCount(){return CARDS.filter(function(c){var p=progressFor(c.c);return p.attempts>0||p.legacy;}).length;}
+function consistent(code){
+  var p=progressFor(code),rounds={},modes={},applied=false;
+  (p.evidence||[]).forEach(function(e){rounds[e.round]=true;modes[e.mode]=true;if(e.mode==='connect'){applied=true;}});
+  return Object.keys(rounds).length>=3&&Object.keys(modes).length>=2&&applied;
+}
+function consistentCount(){return CARDS.filter(function(c){return consistent(c.c);}).length;}
+function record(code,ok){
+  var p=progressFor(code);
+  p.attempts=(p.attempts||0)+1;
+  p.everCorrect=!!p.everCorrect||ok;
+  if(ok){
+    p.evidence=(p.evidence||[]).filter(function(e){return e.round!==G.roundId||e.mode!==G.mode;});
+    p.evidence.push({round:G.roundId,mode:G.mode});
+    p.evidence=p.evidence.slice(-12);
+  }else{p.evidence=[];}
+  store.progress[code]=p;
+}
+
+/* ---------- Round builders ---------- */
+function rankMap(){var m={};CARDS.forEach(function(c){m[c.c]=(progressFor(c.c).everCorrect?1:0)+Math.random()*1.3;});return m;}
+
+function buildArrange(){
+  var r=rankMap();
+  function byRank(a,b){return r[a.c]-r[b.c];}
+  var picked=[];
+  SECTIONS.forEach(function(s){picked.push(CARDS.filter(function(c){return c.c[0]===s.id;}).sort(byRank)[0]);});
+  picked.push(CARDS.filter(function(c){return picked.indexOf(c)<0;}).sort(byRank)[0]);
+  var qs=shuffle(picked).map(function(card){return {type:'sort',card:card};});
+  var hc=CARDS.filter(function(c){return c.c[0]==='H';});
+  var codes=hc.map(function(c){return c.c;});
+  var order=shuffle(codes);
+  while(order.join()===codes.join()){order=shuffle(codes);}
+  qs.push({type:'seq',cards:hc,order:order,placed:[]});
+  return qs;
+}
+
+function titleOptions(card){
+  var same=shuffle(CARDS.filter(function(x){return x.c!==card.c&&x.c[0]===card.c[0]&&x.t!==card.t;}));
+  var other=shuffle(CARDS.filter(function(x){return x.c[0]!==card.c[0]&&x.t!==card.t;}));
+  var seen={};seen[card.t]=1;var picks=[];
+  same.slice(0,2).concat(other).forEach(function(x){if(picks.length<3&&!seen[x.t]){seen[x.t]=1;picks.push(x);}});
+  return shuffle([card].concat(picks));
+}
+function buildGuess(){
+  var r=rankMap();
+  var top=CARDS.slice().sort(function(a,b){return r[a.c]-r[b.c];}).slice(0,10);
+  return shuffle(top).map(function(card){return {type:'guess',card:card,options:titleOptions(card),clue:1};});
+}
+function buildConnect(){
+  function rk(cs){return -cs.filter(function(c){return !progressFor(c).everCorrect;}).length*0.6+Math.random()*1.5;}
+  var links=LINKS.map(function(l){return {l:l,r:rk(l.cards)};}).sort(function(a,b){return a.r-b.r;}).slice(0,4).map(function(x){return x.l;});
+  var cases=CASES.map(function(c){return {c:c,r:rk([c.a])};}).sort(function(a,b){return a.r-b.r;}).slice(0,4).map(function(x){return x.c;});
+  var qs=links.map(function(l){
+    return {type:'link',cards:l.cards,why:l.why,noteKey:'link-'+l.cards.join('-'),options:shuffle([{t:l.ok,ok:true}].concat(l.bad.map(function(t,i){return {t:t,ok:false,why:l.whyBad[i]};})))};
+  }).concat(cases.map(function(c){
+    return {type:'case',s:c.s,a:c.a,why:c.why,whyWrong:c.whyWrong,originalDistractors:c.d,noteKey:'case-'+c.a,options:shuffle([c.a].concat(c.d))};
+  }));
+  return shuffle(qs);
+}
+
+/* ---------- State ---------- */
+var G=null;
+var resetArmed=false,resetTimer=null;
+
+function start(mode){
+  var qs=mode==='arrange'?buildArrange():(mode==='guess'?buildGuess():buildConnect());
+  G={roundId:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),mode:mode,qs:qs,i:0,score:0,streak:0,bestStreak:0,log:[],misses:{},correct:0,done:false,answered:null,newBest:false};
+  render();window.scrollTo(0,0);
+}
+
+function settle(o){
+  var bonus=0,pts=o.base||0;
+  if(o.ok){G.streak++;G.bestStreak=Math.max(G.bestStreak,G.streak);G.correct++;if(!o.noBonus){bonus=G.streak>=3?Math.min(10,(G.streak-2)*2):0;}}
+  else{G.streak=0;if(!o.partial){pts=0;}}
+  G.score+=pts+bonus;
+  G.log[G.i]=o.ok?'ok':(o.partial?'part':'no');
+  (o.right||[]).forEach(function(c){record(c,true);});
+  (o.wrong||[]).forEach(function(c){record(c,false);G.misses[c]=true;});
+  save();
+  G.answered={ok:o.ok,partial:!!o.partial,pts:pts,bonus:bonus,picked:o.picked,detail:o.detail};
+}
+
+function onPick(v){
+  if(!G||G.answered||G.done){return;}
+  var q=G.qs[G.i],ok;
+  if(q.type==='sort'){
+    ok=v===q.card.c[0];
+    settle({ok:ok,base:10,picked:v,right:ok?[q.card.c]:[],wrong:ok?[]:[q.card.c]});
+  }else if(q.type==='guess'){
+    ok=v===q.card.c;
+    settle({ok:ok,base:GUESS_PTS[q.clue],picked:v,right:ok?[q.card.c]:[],wrong:ok?[]:[q.card.c]});
+  }else if(q.type==='link'){
+    ok=!!q.options[+v].ok;
+    settle({ok:ok,base:12,picked:+v,right:ok?q.cards:[],wrong:ok?[]:q.cards});
+  }else if(q.type==='case'){
+    ok=v===q.a;
+    settle({ok:ok,base:12,picked:v,right:ok?[q.a]:[],wrong:ok?[]:[q.a]});
+  }
+  render();focusNext();
+}
+
+function seqCheck(){
+  var q=G.qs[G.i];
+  if(G.answered||q.placed.length<q.cards.length){return;}
+  var right=[],wrong=[];
+  q.cards.forEach(function(c,i){(q.placed[i]===c.c?right:wrong).push(c.c);});
+  var perfect=wrong.length===0;
+  settle({ok:perfect,partial:right.length>0,base:right.length*4+(perfect?10:0),noBonus:true,right:right,wrong:wrong});
+  render();focusNext();
+}
+
+function next(){
+  if(!G||!G.answered){return;}
+  G.answered=null;
+  if(G.i>=G.qs.length-1){
+    G.done=true;
+    G.newBest=G.score>(store.best[G.mode]||0);
+    if(G.newBest){store.best[G.mode]=G.score;}
+    save();
+  }else{G.i++;}
+  render();window.scrollTo(0,0);
+}
+function focusNext(){var b=app.querySelector('[data-action="next"]');if(b){b.focus();}}
+
+/* ---------- Views ---------- */
+function topbar(){
+  return '<header class="top"><div class="brand"><a class="brand-mark" href="index.html" aria-label="RATTIB home"><span>R</span><span>A</span><span>T</span><span>T</span><span>I</span><span>B</span></a><span class="brand-sub">Challenge</span></div>'+
+    '<a class="ext" href="index.html">← Back to RATTIB</a></header>';
+}
+
+function modeIcon(m){
+  if(m==='arrange'){return '<svg class="mode-ico" width="56" height="24" viewBox="0 0 56 24" fill="currentColor" aria-hidden="true"><rect x="1" y="7" width="14" height="14" opacity=".45"/><rect x="21" y="2" width="14" height="14" opacity=".75"/><rect x="41" y="8" width="14" height="14"/></svg>';}
+  if(m==='guess'){return '<svg class="mode-ico" width="56" height="24" viewBox="0 0 56 24" fill="currentColor" aria-hidden="true"><rect x="1" y="3" width="54" height="5" rx="2.5"/><rect x="1" y="10" width="38" height="5" rx="2.5" opacity=".7"/><rect x="1" y="17" width="20" height="5" rx="2.5" opacity=".4"/></svg>';}
+  return '<svg class="mode-ico" width="56" height="24" viewBox="0 0 56 24" fill="currentColor" aria-hidden="true"><circle cx="8" cy="12" r="7"/><circle cx="48" cy="12" r="7"/><rect x="14" y="10.5" width="28" height="3"/></svg>';
+}
+
+function viewHome(){
+  var got=correctCount();
+  var modes=Object.keys(MODES).map(function(k){
+    var m=MODES[k],b=store.best[k];
+    return '<article class="mode"><div class="mode-head">'+modeIcon(k)+'<span class="best">Best '+(b?b:'–')+'</span></div>'+
+      '<h3>'+m.name+'</h3><p>'+m.blurb+'</p><p class="meta">'+m.meta+'</p>'+
+      '<button class="btn" data-action="start" data-mode="'+k+'">Play '+m.name+'</button></article>';
+  }).join('');
+  var tiles=SECTIONS.map(function(s){
+    var cs=CARDS.filter(function(c){return c.c[0]===s.id;});
+    var n=cs.filter(function(c){return progressFor(c.c).everCorrect;}).length;
+    var pips=cs.map(function(c){return '<i class="'+(progressFor(c.c).everCorrect?'on':'')+'"></i>';}).join('');
+    return '<a class="tile" style="--s:'+sv(s.id)+'" href="'+WEB+'/section-'+s.id.toLowerCase()+'.html" target="_blank" rel="noopener">'+
+      '<div class="tile-top">'+shape(s.id,18)+'<b>'+s.id+'</b></div><div class="tile-name">'+esc(s.name)+'</div>'+
+      '<div class="pips" aria-hidden="true">'+pips+'</div><div class="tile-count">'+n+' / '+cs.length+' ever correct<br>'+cs.filter(function(c){return consistent(c.c);}).length+' / '+cs.length+' consistent practice</div></a>';
+  }).join('');
+  var hint=attemptedCount()+' / '+CARDS.length+' tried · '+got+' ever correct · '+consistentCount()+' consistent practice';
+  return topbar()+
+   '<section class="hero"><div><p class="eyebrow">Arrange to Understand</p>'+
+   '<h1>Test how well your cards connect.</h1>'+
+   '<p class="lede">56 cards across 8 sections. Sort them, name them from clues, and explain how they fit together. Rounds favour the cards you have not got right yet.</p></div>'+
+   '<div class="fan" aria-hidden="true">'+
+     '<div class="fc c1" style="--s:var(--sA)">'+shape('A',34)+'<span>A1</span></div>'+
+     '<div class="fc c2" style="--s:var(--sD)">'+shape('D',34)+'<span>D2</span></div>'+
+     '<div class="fc c3" style="--s:var(--sH)">'+shape('H',34)+'<span>H4</span></div></div></section>'+
+   '<section><h2 class="sec-title">Choose a challenge</h2><div class="modes">'+modes+'</div></section>'+
+   '<section class="route"><div class="route-head"><h2 class="sec-title">Your route, A to H</h2><p>'+hint+'</p></div><div class="tiles">'+tiles+'</div><p class="practice-note">Filled pips mean answered correctly at least once. Consistent practice means correct in 3 different rounds across at least 2 modes, including Connect, since the most recent error. These are practice records; mastery needs your own explanation, application to a new example, and discussion with a facilitator. Scores and streaks describe the round only. Progress and reflections are saved in this browser.</p></section>'+
+   '<div class="foot"><span>Each section tile opens its page on the companion site.</span>'+
+   '<button class="link" data-action="reset">'+(resetArmed?'Tap again to clear all progress':'Reset progress')+'</button></div>';
+}
+
+function gameFrame(inner){
+  var N=G.qs.length;
+  var segs=G.qs.map(function(_,i){return '<i class="'+(G.log[i]||(i===G.i?'cur':''))+'"></i>';}).join('');
+  return topbar()+
+   '<div class="gbar"><button class="link" data-action="home">← Exit</button>'+
+   '<div class="gmeta"><b>'+MODES[G.mode].name+'</b><span>'+(G.i+1)+' / '+N+'</span></div>'+
+   '<div class="gstats"><span>Score <b>'+G.score+'</b></span><span>Streak <b>'+G.streak+'</b></span></div></div>'+
+   '<div class="seg" role="progressbar" aria-label="Round progress" aria-valuemin="1" aria-valuemax="'+N+'" aria-valuenow="'+(G.i+1)+'">'+segs+'</div>'+
+   '<div class="stage">'+inner+'</div>';
+}
+
+function fbBlock(head,body){
+  var a=G.answered,last=G.i===G.qs.length-1;
+  var cls=a.ok?'good':(a.partial?'part':'bad');
+  var total=a.pts+a.bonus;
+  return '<div class="fb '+cls+'" role="status" aria-live="polite"><p class="fb-head"><span>'+head+'</span>'+
+    '<span class="pts">+'+total+(a.bonus?' <small>('+a.bonus+' streak)</small>':'')+'</span></p>'+body+
+    reflectionBlock()+ '<button class="btn" data-action="next">'+(last?'See results':'Next')+'</button></div>';
+}
+
+function reflectionBlock(){
+  if(G.mode!=='connect'){return '';}
+  var q=G.qs[G.i];
+  return '<div class="reflection"><label for="reasoning">Explain it in your own words</label><p>Give a different example. Why does the selected concept fit, and how would a nearby concept change your explanation?</p><textarea id="reasoning" data-note="'+esc(q.noteKey)+'" placeholder="Optional: write your reasoning, or discuss it with a partner.">'+esc(store.notes[q.noteKey]||'')+'</textarea><small>Optional reflection · saved in this browser · not automatically graded or used as evidence of mastery.</small></div>';
+}
+
+function viewSort(q){
+  var a=G.answered,c=q.card,sid=c.c[0];
+  var bins=SECTIONS.map(function(s){
+    var cls='bin';
+    if(a){if(s.id===sid){cls+=' correct';}else if(s.id===a.picked){cls+=' wrong';}}
+    return '<button class="'+cls+'" style="--s:'+sv(s.id)+'" data-action="pick" data-v="'+s.id+'"'+(a?' disabled':'')+'>'+
+      '<span class="bin-top">'+shape(s.id,16)+'<b>'+s.id+'</b></span><span class="bin-name">'+esc(s.name)+'</span></button>';
+  }).join('');
+  var kws=c.k.map(function(k){return '<li>'+esc(k)+'</li>';}).join('');
+  var card='<article class="card"'+(a?' style="--s:'+sv(sid)+'"':'')+'><div class="card-top">'+
+    (a?codeChip(c.c):'<span class="code ghost">Card ?</span>')+'</div>'+
+    '<h2 class="card-title">'+esc(c.t)+'</h2><ul class="kws">'+kws+'</ul></article>';
+  var fb='';
+  if(a){
+    fb=fbBlock(a.ok?'Correct.':'Not quite.',
+      '<p>This is <b>'+c.c+' '+esc(c.t)+'</b>, in section '+sid+': '+esc(sec(sid).name)+'.</p>'+
+      '<p>'+esc(c.e)+'</p>'+(a.ok?'':'<p class="fb-sec">'+esc(sec(sid).connect)+'</p>'));
+  }
+  return gameFrame('<p class="prompt">Which section does this card belong to?</p>'+card+'<div class="bins">'+bins+'</div>'+fb);
+}
+
+function viewSeq(q){
+  var a=G.answered;
+  var slots=q.cards.map(function(c,i){
+    var code=q.placed[i],n='<span class="n">'+(i+1)+'</span>';
+    if(a){
+      var ok=code===c.c,cc=byCode[code];
+      return '<div class="slot '+(ok?'ok':'no')+'">'+n+'<span class="st">'+esc(cc.t)+'</span><span class="sk">'+(ok?'Correct':'Belongs at '+(q.cards.map(function(x){return x.c;}).indexOf(code)+1))+'</span></div>';
+    }
+    if(code){var cd=byCode[code];return '<button class="slot filled" data-action="seq-remove" data-v="'+i+'" aria-label="Remove '+esc(cd.t)+'">'+n+'<span class="st">'+esc(cd.t)+'</span><span class="sk">Tap to remove</span></button>';}
+    return '<div class="slot">'+n+'<span class="sk" style="margin-left:0">Empty</span></div>';
+  }).join('');
+  var pool=q.order.filter(function(c){return q.placed.indexOf(c)<0;}).map(function(code){
+    var c=byCode[code];return '<button class="chip" data-action="seq-add" data-v="'+code+'"><b>'+esc(c.t)+'</b><small>'+c.k.map(esc).join(', ')+'</small></button>';
+  }).join('');
+  var ready=q.placed.length===q.cards.length;
+  var controls=a?'':'<div class="row"><button class="btn" data-action="seq-check"'+(ready?'':' disabled')+'>Check order</button>'+
+    '<button class="btn ghost" data-action="seq-clear"'+(q.placed.length?'':' disabled')+'>Clear</button></div>';
+  var fb='';
+  if(a){
+    var right=q.cards.filter(function(c,i){return q.placed[i]===c.c;}).length;
+    fb=fbBlock(a.ok?'Perfect order.':right+' of '+q.cards.length+' in place.',
+      '<p>This learning route runs from idea to evidence-led revision. Development is iterative: testing and feedback can lead a team back to earlier activities.</p>'+q.cards.map(cardNote).join(''));
+  }
+  return gameFrame('<p class="prompt">Put the development stages in order, from first to last.</p>'+
+    '<ol class="slots">'+slots+'</ol>'+(a?'':'<div class="pool">'+pool+'</div>')+controls+fb);
+}
+
+function viewGuess(q){
+  var a=G.answered,c=q.card;
+  var kw=c.k.map(function(k,i){return (i<q.clue||a)?'<li>'+esc(k)+'</li>':'<li class="off">Clue '+(i+1)+'</li>';}).join('');
+  var desc=a?'<p>'+esc(c.e)+'</p>':(q.clue>=4?'<p>'+esc(mask(c))+'</p>':'<p class="desc off">Description (last clue)</p>');
+  var worth=a?'':'<span class="worth">Worth '+GUESS_PTS[q.clue]+'</span>';
+  var title=a?'<h2 class="card-title">'+esc(c.t)+'</h2>':'<h2 class="card-title q">? ? ?</h2>';
+  var card='<article class="card"'+(a?' style="--s:'+sv(c.c[0])+'"':'')+'><div class="card-top">'+
+    (a?codeChip(c.c):'<span class="code ghost">Card ?</span>')+worth+'</div>'+title+'<ul class="kws">'+kw+'</ul>'+desc+'</article>';
+  var opts=q.options.map(function(o,i){
+    var cls='opt';
+    if(a){if(o.c===c.c){cls+=' correct';}else if(o.c===a.picked){cls+=' wrong';}}
+    return '<button class="'+cls+'" data-action="pick" data-v="'+o.c+'"'+(a?' disabled':'')+'><span class="k">'+(i+1)+'</span><span class="opt-t">'+esc(o.t)+'</span></button>';
+  }).join('');
+  var clueBtn=a?'':'<div class="row"><button class="btn ghost" data-action="clue"'+(q.clue>=4?' disabled':'')+'>'+
+    (q.clue>=4?'All clues shown':'Next clue (worth '+GUESS_PTS[q.clue+1]+')')+'</button></div>';
+  var fb='';
+  if(a){fb=fbBlock(a.ok?'Correct.':'Not quite.','<p>The card is <b>'+c.c+' '+esc(c.t)+'</b>, in section '+c.c[0]+': '+esc(sec(c.c[0]).name)+'.</p>');}
+  return gameFrame('<p class="prompt">Name the card. Fewer clues earn more points.</p>'+card+clueBtn+'<div class="opts">'+opts+'</div>'+fb);
+}
+
+function viewLink(q){
+  var a=G.answered;
+  var pair=q.cards.map(function(code){
+    return '<div class="pair-card" style="--s:'+sv(code[0])+'">'+codeChip(code)+'<b>'+esc(byCode[code].t)+'</b></div>';
+  }).join('');
+  var opts=q.options.map(function(o,i){
+    var cls='opt';
+    if(a){if(o.ok){cls+=' correct';}else if(i===a.picked){cls+=' wrong';}}
+    return '<button class="'+cls+'" data-action="pick" data-v="'+i+'"'+(a?' disabled':'')+'><span class="k">'+(i+1)+'</span><span class="opt-t">'+esc(o.t)+'</span></button>';
+  }).join('');
+  var fb='';
+  if(a){
+    var chosen=q.options[a.picked];
+    var correct=q.options.filter(function(o){return o.ok;})[0];
+    var explanation='<p><b>Best explanation:</b> '+esc(correct.t)+'</p><p>'+esc(q.why)+'</p>';
+    if(!a.ok){explanation+='<p><b>Why your option is less suitable:</b> '+esc(chosen.why)+'</p>';}
+    fb=fbBlock(a.ok?'Correct.':'Not quite.',explanation+q.cards.map(function(c){return cardNote(byCode[c]);}).join(''));
+  }
+  return gameFrame('<p class="prompt">Which statement best explains how these cards connect?</p><div class="pair">'+pair+'</div><div class="opts">'+opts+'</div>'+fb);
+}
+
+function viewCase(q){
+  var a=G.answered;
+  var opts=q.options.map(function(code,i){
+    var c=byCode[code],cls='opt';
+    if(a){if(code===q.a){cls+=' correct';}else if(code===a.picked){cls+=' wrong';}}
+    return '<button class="'+cls+'" data-action="pick" data-v="'+code+'"'+(a?' disabled':'')+'><span class="k">'+(i+1)+'</span><span class="opt-t">'+esc(c.t)+'</span>'+codeChip(code)+'</button>';
+  }).join('');
+  var fb='';
+  if(a){
+    var body='<p>Best fit: <b>'+q.a+' '+esc(byCode[q.a].t)+'</b>.</p>'+cardNote(byCode[q.a]);
+    body+='<p>'+esc(q.why)+'</p>';
+    if(!a.ok){body+='<p><b>Why the other concept is less direct here:</b> '+esc(q.whyWrong[q.originalDistractors.indexOf(a.picked)])+'</p><p class="fb-sub">You chose</p>'+cardNote(byCode[a.picked]);}
+    fb=fbBlock(a.ok?'Correct.':'Not quite.',body);
+  }
+  return gameFrame('<p class="prompt">Which card would you turn to first?</p><blockquote class="scenario">'+esc(q.s)+'</blockquote><div class="opts">'+opts+'</div>'+fb);
+}
+
+function viewResults(){
+  var N=G.qs.length;
+  var segs=G.qs.map(function(_,i){return '<i class="'+(G.log[i]||'')+'"></i>';}).join('');
+  var misses=Object.keys(G.misses).sort().map(function(c){return byCode[c];});
+  var secs={};misses.forEach(function(c){secs[c.c[0]]=1;});
+  var review=misses.length?
+    '<section><h2 class="sec-title">Worth another look</h2><div class="review">'+
+      misses.map(function(c){return '<div class="rv" style="--s:'+sv(c.c[0])+'">'+cardNote(c)+'</div>';}).join('')+'</div>'+
+      '<p class="links">'+Object.keys(secs).sort().map(function(id){
+        return '<a href="'+WEB+'/section-'+id.toLowerCase()+'.html" target="_blank" rel="noopener">Revisit section '+id+' on the companion site ↗</a>';}).join('')+'</p></section>':
+    '<section><h2 class="sec-title">No misses</h2><p class="lede">Every card in this round was answered correctly.</p></section>';
+  return topbar()+
+   '<div class="res"><div><p class="eyebrow">'+MODES[G.mode].name+' · round complete</p></div>'+
+   '<div class="res-score"><div class="big">'+G.score+'</div>'+
+     '<div class="stat"><span>Correct</span><b>'+G.correct+' of '+N+'</b></div>'+
+     '<div class="stat"><span>Best streak</span><b>'+G.bestStreak+'</b></div>'+
+     '<div class="stat"><span>Mode best</span><b>'+(store.best[G.mode]||0)+'</b></div></div>'+
+   (G.newBest?'<span class="tag">New best</span>':'')+
+   '<div class="seg" aria-hidden="true">'+segs+'</div>'+
+   '<div class="row"><button class="btn" data-action="again" data-mode="'+G.mode+'">Play again</button>'+
+   '<button class="btn ghost" data-action="home">Back to challenges</button></div>'+
+   review+'<p class="practice-note">This round contributes to your practice history. A correct selection is one piece of evidence. Explain and apply the concept to a new situation before making a judgment about mastery.</p></div>';
+}
+
+function render(){
+  var html;
+  if(!G){html=viewHome();}
+  else if(G.done){html=viewResults();}
+  else{
+    var q=G.qs[G.i];
+    html=q.type==='sort'?viewSort(q):q.type==='seq'?viewSeq(q):q.type==='guess'?viewGuess(q):q.type==='link'?viewLink(q):viewCase(q);
+  }
+  app.innerHTML=html;
+}
+
+/* ---------- Events ---------- */
+app.addEventListener('click',function(e){
+  var el=e.target.closest('[data-action]');
+  if(!el||el.disabled){return;}
+  var act=el.getAttribute('data-action'),v=el.getAttribute('data-v');
+  var q=G&&!G.done?G.qs[G.i]:null;
+  if(act==='start'||act==='again'){start(el.getAttribute('data-mode'));}
+  else if(act==='home'){G=null;render();window.scrollTo(0,0);}
+  else if(act==='pick'){onPick(v);}
+  else if(act==='next'){next();}
+  else if(act==='clue'){if(q&&q.type==='guess'&&!G.answered&&q.clue<4){q.clue++;render();}}
+  else if(act==='seq-add'){if(q&&q.type==='seq'&&!G.answered){q.placed.push(v);render();}}
+  else if(act==='seq-remove'){if(q&&q.type==='seq'&&!G.answered){q.placed.splice(+v,1);render();}}
+  else if(act==='seq-clear'){if(q&&q.type==='seq'&&!G.answered){q.placed=[];render();}}
+  else if(act==='seq-check'){seqCheck();}
+  else if(act==='reset'){
+    if(resetArmed){store=emptyStore();save();try{localStorage.removeItem('rattib-challenge-v1');}catch(e){}resetArmed=false;clearTimeout(resetTimer);render();}
+    else{resetArmed=true;render();clearTimeout(resetTimer);resetTimer=setTimeout(function(){resetArmed=false;if(!G){render();}},4000);}
+  }
+});
+
+app.addEventListener('input',function(e){
+  var key=e.target.getAttribute('data-note');
+  if(key){store.notes[key]=e.target.value.slice(0,10000);save();}
+});
+
+document.addEventListener('keydown',function(e){
+  if(e.target&&/^(TEXTAREA|INPUT|SELECT)$/.test(e.target.tagName)){return;}
+  if(!G||G.done||G.answered||e.ctrlKey||e.metaKey||e.altKey){return;}
+  var q=G.qs[G.i],k=e.key.toLowerCase();
+  if(q.type==='sort'&&/^[a-h]$/.test(k)){onPick(k.toUpperCase());}
+  else if(q.type==='guess'&&/^[1-4]$/.test(k)){onPick(q.options[+k-1].c);}
+  else if(q.type==='link'&&/^[1-3]$/.test(k)){onPick(String(+k-1));}
+  else if(q.type==='case'&&/^[1-4]$/.test(k)){onPick(q.options[+k-1]);}
+});
+
+render();
+})();
+</script>
+
+</body></html>
